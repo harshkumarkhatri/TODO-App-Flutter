@@ -11,6 +11,8 @@ class DatabaseHelper {
 
   static final columnId = '_id';
   static final columnName = 'name';
+    static final columnName2 = 'dateTime';
+
 
   // This will be making the constructor for the class private.
   // This will make only one instance for this for the full app.
@@ -43,7 +45,8 @@ class DatabaseHelper {
     db.execute('''
       CREATE TABLE $_tableName(
       $columnId INTEGER PRIMARY KEY,
-      $columnName TEXT NOT NULL)
+      $columnName TEXT NOT NULL,
+       $columnName2 TEXT NOT NULL)
       ''');
   }
 
