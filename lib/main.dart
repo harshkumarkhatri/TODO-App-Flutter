@@ -121,6 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: const EdgeInsets.only(left: 15, right: 15),
                     child: new Card(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -164,6 +165,21 @@ class _MyHomePageState extends State<MyHomePage> {
                               ],
                             ),
                           ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8, top: 4, bottom: 4),
+                            child: Container(
+                                child: Text(displayDateTime(index),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        // fontSize: 16,
+                                        letterSpacing: 1.2)
+                                    // _queryRows[index]["dateTime"].substring(0, 1) ==
+                                    //         "U"
+                                    //     ? _queryRows[index]["dateTime"].substring(8)
+                                    //     : _queryRows[index]["dateTime"].substring(5),
+                                    )),
+                          ),
                         ],
                       ),
                     ),
@@ -179,15 +195,18 @@ class _MyHomePageState extends State<MyHomePage> {
         // the text that the user has entered into the text field.
         onPressed: () async {
           if (myController.text.length > 0) {
-            int i = await DatabaseHelper.instance
-                .insert({DatabaseHelper.columnName: myController.text});
+            int i = await DatabaseHelper.instance.insert({
+              DatabaseHelper.columnName: myController.text,
+              DatabaseHelper.columnName2: "Added ${DateTime.now()}"
+            });
 
             print("The inserted id is $i");
           }
           if (myController2.text.length > 0) {
             int updatedId = await DatabaseHelper.instance.update({
               DatabaseHelper.columnId: toUpdateId,
-              DatabaseHelper.columnName: myController2.text
+              DatabaseHelper.columnName: myController2.text,
+              DatabaseHelper.columnName2: "Updated ${DateTime.now()}"
             });
             print("Updated id is $updatedId");
           }
@@ -226,6 +245,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget makingList(queryRows) {
     return ListView.builder(itemCount: 3, itemBuilder: (context, index) {});
+  }
+
+  String displayDateTime(index) {
+    String dateToBeReturned;
+    DateTime date = DateTime.parse(
+        _queryRows[index]["dateTime"].substring(0, 1) == "U"
+            ? _queryRows[index]["dateTime"].substring(8)
+            : _queryRows[index]["dateTime"].substring(6));
+    print(date.minute);
+    return dateToBeReturned =
+        "${  _queryRows[index]["dateTime"].substring(0, 1) == "U"
+            ? _queryRows[index]["dateTime"].substring(0,8)
+            : _queryRows[index]["dateTime"].substring(0,6)}on ${date.day}-${date.month}-${date.year} at ${date.hour}:${date.minute}:${date.second}";
   }
 
   deleteItem(indexOfItem) async {
