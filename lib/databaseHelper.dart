@@ -8,6 +8,7 @@ class DatabaseHelper {
   static final _dbName = 'myDatabase.db';
   static final _dbVersion = 1;
   static final _tableName = 'myTable';
+  static final _tableName2 = 'completedItems';
 
   static final columnId = '_id';
   static final columnName = 'name';
@@ -48,24 +49,30 @@ class DatabaseHelper {
       $columnName TEXT NOT NULL,
        $columnName2 TEXT NOT NULL)
       ''');
+       db.execute('''
+      CREATE TABLE $_tableName2(
+      $columnId INTEGER PRIMARY KEY,
+      $columnName TEXT NOT NULL,
+       $columnName2 TEXT NOT NULL)
+      ''');
   }
 
   // Inserting to the database
   // Int is ised here so that we do not need to pass the Id each time when we want to insert anything
   // The value of Id will increment by itself.
-  Future<int> insert(Map<String, dynamic> row) async {
+  Future<int> insert(tableName,Map<String, dynamic> row) async {
     Database db = await instance.database;
 
     // Once the insert is successfully performed it will be returning the primary key/Unique Id
-    return await db.insert(_tableName, row);
+    return await db.insert(tableName, row);
   }
 
   // Getting all the rows from the table
-  Future<List<Map<String, dynamic>>> queryAll() async {
+  Future<List<Map<String, dynamic>>> queryAll(tableName) async {
     Database db = await instance.database;
 
     // Returns the list of rows with data in them
-    return await db.query(_tableName);
+    return await db.query(tableName);
   }
 
   // Updating data of particular row
