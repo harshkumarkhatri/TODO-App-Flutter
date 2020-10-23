@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app_flutter/completedItems.dart';
 
 import 'databaseHelper.dart';
 
@@ -48,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void init() async {
-    _queryRows = await DatabaseHelper.instance.queryAll();
+    _queryRows = await DatabaseHelper.instance.queryAll("myTable");
     setState(() {
       _queryRows;
     });
@@ -82,6 +83,19 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Column(
         children: [
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => CompletedItems()));
+            },
+            child: Container(
+              child: Center(
+                child: Text(
+                  "Completed item",
+                ),
+              ),
+            ),
+          ),
           _editVisibility == true
               ? Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -139,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   onTap: () {
                                     setState(() {
                                       toUpdateId = _queryRows[index]["_id"];
-                                      print("$toUpdateId is to update id");
+                                      // print("$toUpdateId is to update id");
                                       _editVisibility == false
                                           ? _editVisibility = true
                                           : _editVisibility = false;
@@ -152,12 +166,21 @@ class _MyHomePageState extends State<MyHomePage> {
                                   ),
                                 ),
                                 GestureDetector(
-                                    onTap: () {
-                                      print("${_queryRows} is queryRows");
-                                      print(
-                                          "${_queryRows[index]} is index wala");
-                                      print(
-                                          "${_queryRows[index]["id"]} is passed");
+                                    onTap: () async {
+                                      // print("${_queryRows} is queryRows");
+                                      // print(
+                                      // "${_queryRows[index]} is index wala");
+                                      // print(
+                                      // "${_queryRows[index]["_id"]} is passed");
+                                      addItemToCompletedTable(
+                                          _queryRows[index]);
+                                      int i = await DatabaseHelper.instance
+                                          .insert("completedItems", {
+                                        DatabaseHelper.columnName:
+                                            _queryRows[index]['name'],
+                                        DatabaseHelper.columnName2:
+                                            _queryRows[index]["dateTime"]
+                                      });
                                       deleteItem(_queryRows[index]["_id"]);
                                     },
                                     child: Icon(Icons.delete,
@@ -195,12 +218,12 @@ class _MyHomePageState extends State<MyHomePage> {
         // the text that the user has entered into the text field.
         onPressed: () async {
           if (myController.text.length > 0) {
-            int i = await DatabaseHelper.instance.insert({
+            int i = await DatabaseHelper.instance.insert("myTable", {
               DatabaseHelper.columnName: myController.text,
               DatabaseHelper.columnName2: "Added ${DateTime.now()}"
             });
 
-            print("The inserted id is $i");
+            // print("The inserted id is $i");
           }
           if (myController2.text.length > 0) {
             int updatedId = await DatabaseHelper.instance.update({
@@ -208,7 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
               DatabaseHelper.columnName: myController2.text,
               DatabaseHelper.columnName2: "Updated ${DateTime.now()}"
             });
-            print("Updated id is $updatedId");
+            // print("Updated id is $updatedId");
           }
           // return showDialog(
           //   context: context,
@@ -222,15 +245,15 @@ class _MyHomePageState extends State<MyHomePage> {
           // );
 
           List<Map<String, dynamic>> queryRows =
-              await DatabaseHelper.instance.queryAll();
+              await DatabaseHelper.instance.queryAll("myTable");
           await setState(() {
             _queryRows = queryRows;
           });
 
-          print("query rows are ${_queryRows}");
-          print("${queryRows.runtimeType} is runtime type");
+          // print("query rows are ${_queryRows}");
+          // print("${queryRows.runtimeType} is runtime type");
           clearTextInput();
-          print(_queryRows.length);
+          // print(_queryRows.length);
         },
         tooltip: 'Show me the value!',
         child: Icon(Icons.text_fields),
@@ -253,19 +276,26 @@ class _MyHomePageState extends State<MyHomePage> {
         _queryRows[index]["dateTime"].substring(0, 1) == "U"
             ? _queryRows[index]["dateTime"].substring(8)
             : _queryRows[index]["dateTime"].substring(6));
-    print(date.minute);
+    // print(date.minute);
     return dateToBeReturned =
-        "${  _queryRows[index]["dateTime"].substring(0, 1) == "U"
-            ? _queryRows[index]["dateTime"].substring(0,8)
-            : _queryRows[index]["dateTime"].substring(0,6)}on ${date.day}-${date.month}-${date.year} at ${date.hour}:${date.minute}:${date.second}";
+        "${_queryRows[index]["dateTime"].substring(0, 1) == "U" ? _queryRows[index]["dateTime"].substring(0, 8) : _queryRows[index]["dateTime"].substring(0, 6)}on ${date.day}-${date.month}-${date.year} at ${date.hour}:${date.minute}:${date.second}";
   }
 
   deleteItem(indexOfItem) async {
-    print("index of item is ${indexOfItem + 1}");
+    // print("inside deleting item");
+    _queryRows = await DatabaseHelper.instance.queryAll("myTable");
+    // print(_queryRows);
+    // addItemToCompletedTable(_queryRows[indexOfItem]);
+    // print("index of item is ${indexOfItem + 1}");
     await DatabaseHelper.instance.delete(indexOfItem);
-    _queryRows = await DatabaseHelper.instance.queryAll();
+    _queryRows = await DatabaseHelper.instance.queryAll("myTable");
     setState(() {
       _queryRows;
     });
+  }
+
+  addItemToCompletedTable(Map<String, dynamic> itemJson) {
+    print("addItemToCompletedTable");
+    print(itemJson.toString());
   }
 }
