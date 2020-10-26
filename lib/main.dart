@@ -42,7 +42,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     init();
 
     super.initState();
@@ -83,15 +82,38 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Column(
         children: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => CompletedItems()));
-            },
-            child: Container(
-              child: Center(
-                child: Text(
-                  "Completed item",
+          Padding(
+            padding: const EdgeInsets.only(top: 15, bottom: 15),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => CompletedItems()));
+              },
+              child: Container(
+                child: Center(
+                  child: Container(
+                    decoration: BoxDecoration(color:Colors.black,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey,
+                          offset: Offset(0.0, 1.0), //(x,y)
+                          blurRadius: 3.0,spreadRadius: 1
+                        ),
+                      ],
+                      border: Border.all(
+                        width: 2,
+                        color: Colors.black,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text("Completed item",
+                          style: TextStyle(
+                              fontSize: 28,
+                              color: Colors.blue,
+                              fontWeight: FontWeight.w500)),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -125,7 +147,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                 ),
-          // makingList(_queryRows)
           Expanded(
             child: Container(
               child: ListView.builder(
@@ -153,7 +174,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                   onTap: () {
                                     setState(() {
                                       toUpdateId = _queryRows[index]["_id"];
-                                      // print("$toUpdateId is to update id");
                                       _editVisibility == false
                                           ? _editVisibility = true
                                           : _editVisibility = false;
@@ -167,11 +187,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                                 GestureDetector(
                                     onTap: () async {
-                                      // print("${_queryRows} is queryRows");
-                                      // print(
-                                      // "${_queryRows[index]} is index wala");
-                                      // print(
-                                      // "${_queryRows[index]["_id"]} is passed");
                                       addItemToCompletedTable(
                                           _queryRows[index]);
                                       int i = await DatabaseHelper.instance
@@ -179,7 +194,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                         DatabaseHelper.columnName:
                                             _queryRows[index]['name'],
                                         DatabaseHelper.columnName2:
-                                            _queryRows[index]["dateTime"]
+                                            _queryRows[index]["dateTime"],
+                                        DatabaseHelper.columnName3:
+                                            DateTime.now().toString()
                                       });
                                       deleteItem(_queryRows[index]["_id"]);
                                     },
@@ -195,13 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: Text(displayDateTime(index),
                                     style: TextStyle(
                                         fontWeight: FontWeight.w500,
-                                        // fontSize: 16,
-                                        letterSpacing: 1.2)
-                                    // _queryRows[index]["dateTime"].substring(0, 1) ==
-                                    //         "U"
-                                    //     ? _queryRows[index]["dateTime"].substring(8)
-                                    //     : _queryRows[index]["dateTime"].substring(5),
-                                    )),
+                                        letterSpacing: 1.2))),
                           ),
                         ],
                       ),
@@ -222,8 +233,6 @@ class _MyHomePageState extends State<MyHomePage> {
               DatabaseHelper.columnName: myController.text,
               DatabaseHelper.columnName2: "Added ${DateTime.now()}"
             });
-
-            // print("The inserted id is $i");
           }
           if (myController2.text.length > 0) {
             int updatedId = await DatabaseHelper.instance.update({
@@ -231,18 +240,7 @@ class _MyHomePageState extends State<MyHomePage> {
               DatabaseHelper.columnName: myController2.text,
               DatabaseHelper.columnName2: "Updated ${DateTime.now()}"
             });
-            // print("Updated id is $updatedId");
           }
-          // return showDialog(
-          //   context: context,
-          //   builder: (context) {
-          //     return AlertDialog(
-          //       // Retrieve the text the that user has entered by using the
-          //       // TextEditingController.
-          //       content: Text(myController.text),
-          //     );
-          //   },
-          // );
 
           List<Map<String, dynamic>> queryRows =
               await DatabaseHelper.instance.queryAll("myTable");
@@ -250,10 +248,7 @@ class _MyHomePageState extends State<MyHomePage> {
             _queryRows = queryRows;
           });
 
-          // print("query rows are ${_queryRows}");
-          // print("${queryRows.runtimeType} is runtime type");
           clearTextInput();
-          // print(_queryRows.length);
         },
         tooltip: 'Show me the value!',
         child: Icon(Icons.text_fields),
@@ -276,17 +271,12 @@ class _MyHomePageState extends State<MyHomePage> {
         _queryRows[index]["dateTime"].substring(0, 1) == "U"
             ? _queryRows[index]["dateTime"].substring(8)
             : _queryRows[index]["dateTime"].substring(6));
-    // print(date.minute);
     return dateToBeReturned =
         "${_queryRows[index]["dateTime"].substring(0, 1) == "U" ? _queryRows[index]["dateTime"].substring(0, 8) : _queryRows[index]["dateTime"].substring(0, 6)}on ${date.day}-${date.month}-${date.year} at ${date.hour}:${date.minute}:${date.second}";
   }
 
   deleteItem(indexOfItem) async {
-    // print("inside deleting item");
     _queryRows = await DatabaseHelper.instance.queryAll("myTable");
-    // print(_queryRows);
-    // addItemToCompletedTable(_queryRows[indexOfItem]);
-    // print("index of item is ${indexOfItem + 1}");
     await DatabaseHelper.instance.delete(indexOfItem);
     _queryRows = await DatabaseHelper.instance.queryAll("myTable");
     setState(() {
