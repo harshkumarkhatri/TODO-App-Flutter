@@ -13,6 +13,8 @@ class DatabaseHelper {
   static final columnId = '_id';
   static final columnName = 'name';
     static final columnName2 = 'dateTime';
+        static final columnName3 = 'completedOn';
+
 
 
   // This will be making the constructor for the class private.
@@ -53,7 +55,8 @@ class DatabaseHelper {
       CREATE TABLE $_tableName2(
       $columnId INTEGER PRIMARY KEY,
       $columnName TEXT NOT NULL,
-       $columnName2 TEXT NOT NULL)
+       $columnName2 TEXT NOT NULL,
+        $columnName3 TEXT NOT NULL)
       ''');
   }
 
