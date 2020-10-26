@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'aboutTheDeveloper.dart';
 import 'databaseHelper.dart';
 
 class CompletedItems extends StatefulWidget {
@@ -23,7 +24,6 @@ class _CompletedItemsState extends State<CompletedItems> {
 
   @override
   void initState() {
-    // TODO: implement initState
     init();
 
     super.initState();
@@ -44,23 +44,45 @@ class _CompletedItemsState extends State<CompletedItems> {
     super.dispose();
   }
 
+  // Open the page respective to the choice from top 3 dots
+  void handleClick(String value) {
+    switch (value) {
+      // Opens the About the Developer page
+      case 'About The Developer':
+        Navigator.push(
+            context, MaterialPageRoute(builder: (_) => AboutTheDev()));
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('TODO Adder'),
+        title: Text('Completed Tasks'),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 15),
-            child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _editVisibility = false;
-                    _visible == false ? _visible = true : _visible = false;
-                  });
+          Positioned(
+            top: 45,
+            right: 0,
+            child: FlatButton(
+              onPressed: () {
+                print("pressing");
+              },
+              child: PopupMenuButton<String>(
+                onSelected: handleClick,
+                itemBuilder: (BuildContext context) {
+                  return {
+                    'About The Developer',
+                  }.map((String choice) {
+                    return PopupMenuItem<String>(
+                      value: choice,
+                      child: Text(choice),
+                    );
+                  }).toList();
                 },
-                child: Icon(Icons.add)),
-          )
+              ),
+            ),
+          ),
         ],
       ),
       body: Column(
@@ -94,7 +116,6 @@ class _CompletedItemsState extends State<CompletedItems> {
                     ),
                   ),
                 ),
-          // makingList(_queryRows)
           Expanded(
             child: Container(
               child: ListView.builder(
@@ -118,35 +139,6 @@ class _CompletedItemsState extends State<CompletedItems> {
                                   ),
                                 ),
                                 Spacer(),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      toUpdateId = _queryRows[index]["_id"];
-                                      // print("$toUpdateId is to update id");
-                                      _editVisibility == false
-                                          ? _editVisibility = true
-                                          : _editVisibility = false;
-                                      _visible = false;
-                                    });
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 10),
-                                    child: Icon(Icons.edit),
-                                  ),
-                                ),
-                                GestureDetector(
-                                    onTap: () {
-                                      // print("${_queryRows} is queryRows");
-                                      // print(
-                                      // "${_queryRows[index]} is index wala");
-                                      // print(
-                                      // "${_queryRows[index]["_id"]} is passed");
-                                      addItemToCompletedTable(
-                                          _queryRows[index]);
-                                      deleteItem(_queryRows[index]["_id"]);
-                                    },
-                                    child: Icon(Icons.delete,
-                                        color: Colors.red, size: 30)),
                               ],
                             ),
                           ),
@@ -157,13 +149,16 @@ class _CompletedItemsState extends State<CompletedItems> {
                                 child: Text(displayDateTime(index),
                                     style: TextStyle(
                                         fontWeight: FontWeight.w500,
-                                        // fontSize: 16,
-                                        letterSpacing: 1.2)
-                                    // _queryRows[index]["dateTime"].substring(0, 1) ==
-                                    //         "U"
-                                    //     ? _queryRows[index]["dateTime"].substring(8)
-                                    //     : _queryRows[index]["dateTime"].substring(5),
-                                    )),
+                                        letterSpacing: 1.2))),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8, top: 4, bottom: 4),
+                            child: Container(
+                                child: Text(completedOn(index),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w300,
+                                        letterSpacing: 1.05))),
                           ),
                         ],
                       ),
@@ -180,43 +175,10 @@ class _CompletedItemsState extends State<CompletedItems> {
         // the text that the user has entered into the text field.
         onPressed: () async {
           print(_queryRows);
-          // if (myController.text.length > 0) {
-          //   int i = await DatabaseHelper.instance.insert("myTable", {
-          //     DatabaseHelper.columnName: myController.text,
-          //     DatabaseHelper.columnName2: "Added ${DateTime.now()}"
-          //   });
-
-          //   // print("The inserted id is $i");
-          // }
-          // if (myController2.text.length > 0) {
-          //   int updatedId = await DatabaseHelper.instance.update({
-          //     DatabaseHelper.columnId: toUpdateId,
-          //     DatabaseHelper.columnName: myController2.text,
-          //     DatabaseHelper.columnName2: "Updated ${DateTime.now()}"
-          //   });
-          //   // print("Updated id is $updatedId");
-          // }
-          // return showDialog(
-          //   context: context,
-          //   builder: (context) {
-          //     return AlertDialog(
-          //       // Retrieve the text the that user has entered by using the
-          //       // TextEditingController.
-          //       content: Text(myController.text),
-          //     );
-          //   },
-          // );
-
-          // List<Map<String, dynamic>> queryRows =
-          //     await DatabaseHelper.instance.queryAll();
           await setState(() {
             // _queryRows = queryRows;
           });
-
-          // print("query rows are ${_queryRows}");
-          // print("${queryRows.runtimeType} is runtime type");
           clearTextInput();
-          // print(_queryRows.length);
         },
         tooltip: 'Show me the value!',
         child: Icon(Icons.text_fields),
@@ -239,22 +201,15 @@ class _CompletedItemsState extends State<CompletedItems> {
         _queryRows[index]["dateTime"].substring(0, 1) == "U"
             ? _queryRows[index]["dateTime"].substring(8)
             : _queryRows[index]["dateTime"].substring(6));
-    // print(date.minute);
     return dateToBeReturned =
         "${_queryRows[index]["dateTime"].substring(0, 1) == "U" ? _queryRows[index]["dateTime"].substring(0, 8) : _queryRows[index]["dateTime"].substring(0, 6)}on ${date.day}-${date.month}-${date.year} at ${date.hour}:${date.minute}:${date.second}";
   }
 
-  deleteItem(indexOfItem) async {
-    // print("inside deleting item");
-    // _queryRows = await DatabaseHelper.instance.queryAll();
-    // // print(_queryRows);
-    // // addItemToCompletedTable(_queryRows[indexOfItem]);
-    // // print("index of item is ${indexOfItem + 1}");
-    // await DatabaseHelper.instance.delete(indexOfItem);
-    // _queryRows = await DatabaseHelper.instance.queryAll();
-    // setState(() {
-    //   _queryRows;
-    // });
+  String completedOn(index) {
+    String dateToBeReturned;
+    DateTime date = DateTime.parse(_queryRows[index]["completedOn"]);
+    return dateToBeReturned =
+        "Completed on ${date.day}-${date.month}-${date.year} at ${date.hour}:${date.minute}:${date.second}";
   }
 
   addItemToCompletedTable(Map<String, dynamic> itemJson) {
