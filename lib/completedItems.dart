@@ -131,14 +131,15 @@ class _CompletedItemsState extends State<CompletedItems> {
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
                               children: [
-                                new Text(
-                                  _queryRows[index]["name"],
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 24,
+                                Expanded(
+                                                                  child: new Text(
+                                    _queryRows[index]["name"],
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 24,
+                                    ),
                                   ),
                                 ),
-                                Spacer(),
                               ],
                             ),
                           ),

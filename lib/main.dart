@@ -92,13 +92,14 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Container(
                 child: Center(
                   child: Container(
-                    decoration: BoxDecoration(color:Colors.black,
+                    decoration: BoxDecoration(
+                      color: Colors.black,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey,
-                          offset: Offset(0.0, 1.0), //(x,y)
-                          blurRadius: 3.0,spreadRadius: 1
-                        ),
+                            color: Colors.grey,
+                            offset: Offset(0.0, 1.0), //(x,y)
+                            blurRadius: 3.0,
+                            spreadRadius: 1),
                       ],
                       border: Border.all(
                         width: 2,
@@ -161,47 +162,58 @@ class _MyHomePageState extends State<MyHomePage> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                new Text(
-                                  _queryRows[index]["name"],
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 24,
+                                Flexible(
+                                  child: new Text(
+                                    _queryRows[index]["name"],
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 24,
+                                    ),
                                   ),
                                 ),
-                                Spacer(),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      toUpdateId = _queryRows[index]["_id"];
-                                      _editVisibility == false
-                                          ? _editVisibility = true
-                                          : _editVisibility = false;
-                                      _visible = false;
-                                    });
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 10),
-                                    child: Icon(Icons.edit),
-                                  ),
-                                ),
-                                GestureDetector(
-                                    onTap: () async {
-                                      addItemToCompletedTable(
-                                          _queryRows[index]);
-                                      int i = await DatabaseHelper.instance
-                                          .insert("completedItems", {
-                                        DatabaseHelper.columnName:
-                                            _queryRows[index]['name'],
-                                        DatabaseHelper.columnName2:
-                                            _queryRows[index]["dateTime"],
-                                        DatabaseHelper.columnName3:
-                                            DateTime.now().toString()
-                                      });
-                                      deleteItem(_queryRows[index]["_id"]);
-                                    },
-                                    child: Icon(Icons.delete,
-                                        color: Colors.red, size: 30)),
+                                // _queryRows[index]["name"].length > 10
+                                //     ? Container()
+                                //     : Spacer(),
+                                Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          toUpdateId = _queryRows[index]["_id"];
+                                          _editVisibility == false
+                                              ? _editVisibility = true
+                                              : _editVisibility = false;
+                                          _visible = false;
+                                        });
+                                      },
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 10),
+                                        child: Icon(Icons.edit),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                        onTap: () async {
+                                          addItemToCompletedTable(
+                                              _queryRows[index]);
+                                          int i = await DatabaseHelper.instance
+                                              .insert("completedItems", {
+                                            DatabaseHelper.columnName:
+                                                _queryRows[index]['name'],
+                                            DatabaseHelper.columnName2:
+                                                _queryRows[index]["dateTime"],
+                                            DatabaseHelper.columnName3:
+                                                DateTime.now().toString()
+                                          });
+                                          deleteItem(_queryRows[index]["_id"]);
+                                        },
+                                        child: Icon(Icons.delete,
+                                            color: Colors.red, size: 30)),
+                                  ],
+                                )
                               ],
                             ),
                           ),
